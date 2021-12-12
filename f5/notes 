@@ -1,0 +1,52 @@
+# Named Pipes / FIFO
+
+## lado que cria o fifo Passos
+
+* cria FIFO
+* abrir FIFO 
+* read / write 
+* fechar o FIFO
+
+
+fifos na linha de comandos: 
+cat
+unlink 
+
+
+other notes :
+clse -> fechas 
+unlink -> apaga 
+
+TP BALCÃO -> VERIFICA SE JÁ EXISTE UM BALCAO ATIVO
+    -> entao verificamos que já existe algum fifo do balcao 
+    -> incluimos a biblioteca de erros #include <errno.h>
+
+if(mkfifo(SERVER_FIFO .... ) == -1 ){
+
+  if (errno = EXISTE )
+     shutdown();
+
+}
+
+TP PRO TIP: usar MUITO a biblioteca de erros #include <errno.h>
+
+  
+# NOTES EX3 F5 
+
+- Varios clientes, um servidor, 2 fifo a fazer a comuninação entre eles
+
+PROG SERVIDOR <- (read) SERVIDOR(write) - PROG CLIENTES 
+PROG SERVIDOR -> CLIENTE  -> PROG CLENTE 
+
+ Servidor. c
+ mkfifo(SERVIDOR,0666)
+
+ cs = open(SERVIDOR, WRONDLY)
+ res = num1 + num2
+ print(res)
+
+
+Cliente.c 
+print() 
+scanf ()
+
