@@ -1,3 +1,6 @@
+// Ana Videira - 2015012218 
+// Sistemas Operativos 2021/2022
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -14,45 +17,45 @@
 
 */
 
-int main( int argc, char * argv[], char *envp ){
+int main(int argc, char *argv[], char *envp)
+{
 
     char cmd[40];
-    int continue = 1 , pid, result, state;
+    int continua = 1, pid, result, state;
 
+    do
+    {
 
-    while(continue){
-
-        printf("Introduza o comando\n");
+        printf("\n\nIntroduza o comando\n");
         fflush(stdout);
         scanf("%s", cmd);
 
-        if(strcmp(cmd,"sair") != 0){
+        result = fork();
 
-            result = fork();
-            if(result == 0 ){
-                pid = getpid();
-                printf("[%d] Sou o filho... \n ",);
-            }
+        if (result == -1)
+        {
+            perror("fork error" );
+        }
+        else if (result == 0)
+        {
 
+            pid = getpid();
+            printf("[%d] Sou o filho... \n ", pid);
+
+            execl(cmd, cmd, NULL); 
+        }
+        else
+        {
+            
+            pid = getpid();
+            printf("[%d] Sou o Pai... \n ", pid);
 
 
         }
 
+    } while (strcmp(cmd, "sair") != 0);
 
 
-
+        printf("Não consegui executar a aplicacao.\n"); //só aparece se der erro pois se tudo correr bem a aplicação é bustituida antes que chegar a este ponto
 
     }
-
-
-
-    if(strcmp(cmd,"port")==0)
-        execl(cmd,cmd,NULL);           // variante execl precisa da lista dos comandos
-
-    if(strcmp(cmd,"ingl")==0)
-        execl(cmd,cmd,NULL);   
-
-    printf("Não consegui executar a aplicacao.\n");  //só aparece se der erro pois se tudo correr bem a aplicação é bustituida antes que chegar a este ponto     
-
-
-}

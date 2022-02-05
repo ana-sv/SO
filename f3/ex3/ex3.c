@@ -15,20 +15,24 @@ int main(int argc, char** argv) {
     
     int i,n,t = 1;
     char *str;
+    setbuf(stdout,NULL);
     
     if(argc != 3 ){    //verifico se exitem 3 argumentos, o numero de argumentos + os 2 que quero 
         printf("[ERRO] Nr de args invalido!\n ");
         exit(3);
     }
     
-    n=atoi(argv[1]);        // atribuo o numero de * / iterações a n 
+    n=atoi(argv[1]);        // atribuo o numero de  iterações 
     str = getenv("TEMPO");  // vou buscar o valor da variavel de ambiente TEMPO
-    
-    if(str!=NULL)
+
+    if(str!=NULL){
         t=atoi(str);
+    }else{
+        t=2;
+    }
     
     for(i=0; i<n;i++){
-        printf("%s", argv[2]);
+        printf("\n%s", argv[2]);
         fflush(stdout);           //fflush() porque não temos \n no printf , fflush() permite forçar a saida do que está pendente
         sleep(t);
     }

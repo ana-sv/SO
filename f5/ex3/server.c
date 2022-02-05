@@ -1,160 +1,171 @@
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#include <math.h>
+#include <sys/stat.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-#define MAX_CLI 3
-#define SERV_PIPE "serv_pipe"
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-int exeOp(char* str, float *rtn) {
-    int n1, n2, i;
-    char op;
-    sscanf(str, "%d %c %d", &n1, &op, &n2);
+#include <string.h>
+#include <signal.h>
 
-    switch (op) {
-        case '+':
-            *rtn = n1 + n2;
-            return 1;
+#include <pthread.h>
 
-        case '-':
-            *rtn = n1 - n2;
-            return 1;
 
-        case '*':
-            *rtn = n1 * n2;
-            return 1;
 
-        case '/':
-            *rtn = (float)n1 / (float)n2;
-            return 1;
+#define SERVER "serverPipe"
+#define CLIENT "clientePipe%d"
+#define MAXCLIENTS 3
 
-        case '^':
-            *rtn = 1;
-            for (i = 0; i < n2; i++)
-                *rtn *= n1;
-            return 1;
 
-        case '%':
-            *rtn = n1 % n2;
-            return 1;
+typedef struct Question
+{
+    int clientPid;
+    char pipeName[100];
+    char str[100];
 
-        default:
-            return 0;
-    }
+}question;
+
+
+void sayThisAndExit(char * p){
+    perror(p);
+    exit(EXIT_FAILURE);
 }
 
-int main() {
-    int fd_serv, fd_list_r[MAX_CLI], fd_list_w[MAX_CLI], nClientes = 0, i, n, maxFD = STDIN_FILENO;
-    char str[254], temp[256];
-    float resp;
-    fd_set rfds; // para select
 
-    setbuf(stdout, NULL);
+void exitByCrtlC(int s){
+    printf("\n -> Crtl ^C Ativated " );
+    remove(SERVER);
+    exit(EXIT_SUCCESS);
+}
 
-    if (mkfifo(SERV_PIPE, 0777) == -1) {
-        fprintf(stderr, "Erro a construir o pipe do servidor! Talvez o servidor já esteja aberto?\n");
-        exit(-1);
+int max(int a, int b){
+    return (a>b) ? a: b;
+}
+
+void keyboard(){
+    char buffer[200];
+    int bytes;
+
+    fgets(buffer, sizeof(buffer), stdin );  // scanf("%s", buffer);
+    if( strlen(buffer)>0 && (buffer[strlen(buffer)-1]=='\n')  ){ // se tem lá alguma coisa que termina com \n 
+        buffer[strlen(buffer)-1] = '\0';
+    } 
+
+    printf("\nKEYBOARD -> %s", buffer);
+    fflush(stdout);
+
+
+    if(strcmp(buffer,"sair")==0){
+          remove(SERVER);
+        exit(EXIT_SUCCESS);
     }
 
-    fd_serv = open(SERV_PIPE, O_RDWR); // Abrir pipe
-    if (fd_serv == -1) {
-        fprintf(stderr, "Erro a abrir o pipe do servidor!\n");
-        exit(-1);
+
+}
+
+float calculator(char str[100]){
+
+    float result;
+    int n1, n2;
+    char op;
+
+    sscanf(str,"%d %c %d", &n1, &op, &n2);
+    
+    switch (op)
+    {
+    case '+' :
+        return n1 + n2;
+
+    case '-' :
+        return n1 - n2;
+
+    case '*' :
+        return n1 * n2;
+    
+    case '/' :
+        return n1 / n2;
+    
+    default:
+        return 0;
     }
 
-    printf("[SERV] Pipe aberto!\n");
+}
 
-    do {
-        FD_ZERO(&rfds);
-        FD_SET(STDIN_FILENO, &rfds); // Adicionar pipe ao conjunto de entradas do select
-        FD_SET(fd_serv, &rfds);
-        
-        for (i = 0; i < nClientes; i++) {
-            FD_SET(fd_list_w[i], &rfds); // Adicionar pipe ao conjunto de entradas do select
-            if (fd_list_w[i] > maxFD)
-                maxFD = fd_list_w[i];
-        }
-        if (STDIN_FILENO > maxFD)
-            maxFD = STDIN_FILENO;
-        else if (fd_serv > maxFD)
-            maxFD = fd_serv;
+int main(int argc, char *argv[])
+{
 
-        printf("[SERV] Estou à cuca...\n");
-        n = select(maxFD + 1, &rfds, NULL, NULL, NULL);
-        if (n == -1) {
-            fprintf(stderr, "Erro no select!\n");
-            exit(-1);
-        }
+    int fdServer, fdClient;
+    int nfd;
+    fd_set read_fds;
+    struct timeval time;
+    question q;
+    int bytes;
+    float result;
 
-        if (FD_ISSET(STDIN_FILENO, &rfds)) { // Se há dados no pipe, ler pipe
-            n = read(STDIN_FILENO, str, sizeof(str) - 1); // Ler do stdin
-            if (n == -1) {
-                printf("[SERV] Erro a ler do stdin!\n");
-                continue;
-            }
-            str[n - 1] = '\0';
-            printf("[SERV] Lidos %i bytes do stdin: -%s-.\n", n, str);
-        }
+  printf("\nOI ");
+    signal(SIGINT, exitByCrtlC);
 
-        for (i = 0; i < nClientes; i++) {
-            if (FD_ISSET(fd_list_w[i], &rfds)) { // Se há dados no pipe, ler pipe
-                n = read(fd_list_w[i], str, sizeof(str) - 1);
-                if (n == -1) {
-                    printf("[SERV] Erro a ler do pipe de um cliente!\n");
-                    continue;
-                }
-                str[n - 1] = '\0';
-                printf("[SERV] Lidos %i bytes do pipe de um cliente: -%s-.\n", n, str);
+    if (access(SERVER, F_OK) != -1)
+        sayThisAndExit("Server is already running!");
 
-                if (exeOp(str, &resp))
-                    sprintf(str, "%.2f", resp);
-                else
-                    sprintf(str, "OPERAÇÃO INVÁLIDA");
-                
-                n = write(fd_list_r[i], str, strlen(str) + 1);
-                if (n == -1) {
-                    printf("[SERV] Erro ao escrever no pipe de um cliente!\n");
-                    continue;
-                }
-            }
+    mkfifo(SERVER, 00777);
+    fdServer = open(SERVER, O_RDONLY | O_NONBLOCK);
+    if (fdServer == -1)
+        sayThisAndExit("Open server pipe error ");
+
+
+    while (1)
+    {
+        time.tv_sec = 0;
+        time.tv_usec = 0;
+
+        FD_ZERO(&read_fds);   // inicializamos o conjunto de fd
+        FD_SET(0, &read_fds); // adiciona stdin ao conjunto
+        FD_SET(fdServer, &read_fds);
+
+
+        nfd = select( fdServer+1 , &read_fds, NULL, NULL, &time);
+        if( nfd == -1 ){
+            close(fdServer);
+            unlink(SERVER);
+            remove(SERVER);
+            sayThisAndExit("Select Error");
         }
 
-        if (FD_ISSET(fd_serv, &rfds)) { // Se há dados no pipe, ler pipe
-            n = read(fd_serv, str, sizeof(str) - 1);
-            if (n == -1) {
-                printf("[SERV] Erro a ler do meu pipe!\n");
-                continue;
-            }
-            
-            str[n - 1] = '\0';
-            printf("[SERV] Lidos %i bytes do pipe do servidor: -%s-.\n", n, str);
-
-            sprintf(temp, "%s_w", str);
-            fd_list_w[nClientes] = open(temp, O_RDONLY); // Abrir pipe
-            if (fd_list_w[nClientes] == -1)
-                printf("[SERV] Erro a abrir pipe de escrita do cliente! Vou continuar...\n");
-
-            sprintf(temp, "%s_r", str);
-            fd_list_r[nClientes] = open(temp, O_WRONLY); // Abrir pipe
-            if (fd_list_r[nClientes] == -1)
-                printf("[SERV] Erro a abrir pipe de leitura do cliente! Vou continuar...\n");
-
-            nClientes++;
+        if( nfd == 0 ){
+            //printf("\nEstou a espera... \n ");
+            fflush(stdout);
+            continue;
         }
 
-    } while (strcmp(str, "sair"));
+        if( FD_ISSET(0, &read_fds)){   // ler do teclado
+            keyboard();
+        }
 
-    for (i = 0; i < nClientes; i++) { // Fechar todos os pipes de cliente
-        close(fd_list_w[i]);
-        close(fd_list_r[i]);
+        if( FD_ISSET(fdServer, &read_fds) ){
+           
+            bytes = read( fdServer, &q, sizeof(question) );
+            printf("\n[FROM %s]  %s", q.pipeName, q.str);
+
+            result = calculator(q.str);
+            printf("\nResultado : %f", result);
+
+            fdClient = open( q.pipeName, O_WRONLY);
+            bytes = write(fdClient, &result, sizeof(float));
+
+            close(fdClient);
+        }
+
+
     }
 
-    close(fd_serv);
-    unlink(SERV_PIPE);
-    return 0;
+
+        return EXIT_SUCCESS; // em principio, neste exemplo, nao chegará aqui
+
 }

@@ -14,8 +14,9 @@ unlink
 
 
 other notes :
-clse -> fechas 
+close -> fechas 
 unlink -> apaga 
+
 
 TP BALCÃO -> VERIFICA SE JÁ EXISTE UM BALCAO ATIVO
     -> entao verificamos que já existe algum fifo do balcao 
@@ -28,25 +29,5 @@ if(mkfifo(SERVER_FIFO .... ) == -1 ){
 
 }
 
-TP PRO TIP: usar MUITO a biblioteca de erros #include <errno.h>
-
-  
-# NOTES EX3 F5 
-
-- Varios clientes, um servidor, 2 fifo a fazer a comuninação entre eles
-
-PROG SERVIDOR <- (read) SERVIDOR(write) - PROG CLIENTES 
-PROG SERVIDOR -> CLIENTE  -> PROG CLENTE 
-
- Servidor. c
- mkfifo(SERVIDOR,0666)
-
- cs = open(SERVIDOR, WRONDLY)
- res = num1 + num2
- print(res)
-
-
-Cliente.c 
-print() 
-scanf ()
+TP TIP: usar MUITO a biblioteca de erros #include <errno.h>
 

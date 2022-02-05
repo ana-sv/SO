@@ -22,8 +22,13 @@ ls > pipe
 ```
 
 
->  relação entre um named pipe e o sistema de ficheiros: verifica-se que o conteudo da disretoria se altera. Exite uma nova entrada correpondente a um ficheiro especial que é o named pipe. Este tem a letra indicadora p que pode ser visualizanda fazendo ls -l 
+>  Relação entre um named pipe e o sistema de ficheiros: 
+        Verifica-se que o conteudo da diretoria se altera quando criado um novo named pipe. 
+        Existe uma nova entrada correpondente a um ficheiro especial que é o named pipe que tem como letra indicadora p. 
+        Isto pode ser visualizanda fazendo ls -l 
 
-> A forma como a informação é inviada nos named pipes é sem formato especifico (byte stream); 
 
->  Forma como funciona a deteção de novos dados diponiveis e deo fim do ficheiro pelos named pipes:     COMPLETAR
+> A forma como a informação é enviada nos named pipes é em byte stream , ou seja , sem formato especifico.
+
+>  Forma como funciona a deteção de novos dados diponiveis e do fim do ficheiro pelos named pipes:
+        Os names pipes funconam como ficheiros... COMPLETAR

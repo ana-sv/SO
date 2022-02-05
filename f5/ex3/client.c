@@ -1,103 +1,105 @@
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-#define SERV_PIPE "serv_pipe"
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-int fd_w, fd_r, fd_serv;
+#include <string.h>
+#include <signal.h>
 
-void sair(int rtn) {
-    char buff[16];
+#include <pthread.h>
 
-    close(fd_serv);
-    close(fd_w);
-    close(fd_r);
 
-    sprintf(buff, "%d_w", getpid());
-    unlink(buff);
-    sprintf(buff, "%d_r", getpid());
-    unlink(buff);
+#define SERVER "serverPipe"
+#define CLIENT "clientePipe%d"
 
-    exit(rtn);
+
+typedef struct Question
+{
+    int clientPid;
+    char pipeName[100];
+    char str[100];
+
+} question;
+
+
+void sayThisAndExit(char * p){
+    perror(p);
+    exit(EXIT_FAILURE);
 }
 
 
-int main() {
-    int n1, n2, n;
-    char buff[256], op;
+void exitByCrtlC(int s){
+    printf("\n -> Crtl ^C Ativated " );
+    exit(EXIT_SUCCESS);
+}
 
-    setbuf(stdout, NULL);
+int max(int a, int b){
+    return (a>b) ? a: b;
+}
 
-    printf("[CLI] Abrindo o pipe do Servidor...\n");
-    fd_serv = open(SERV_PIPE, O_WRONLY); // Abrir pipe do servidor
-    if (fd_serv == -1) {
-        fprintf(stderr, "Erro a abrir o pipe do servidor! Talvez o servidor não esteja a correr?\n");
-        sair(-1);
-    }
 
-    printf("[CLI] Pipe do servidor aberto, vou criar e abrir os meus pipes...\n");
-    sprintf(buff, "%d_w", getpid());
-    if (mkfifo(buff, 0777) == -1) {
-        fprintf(stderr, "Erro a construir o meu pipe de escrita!\n");
-        sair(-1);
-    }
 
-    fd_w = open(buff, O_RDWR);
-    if (fd_w == -1) {
-        fprintf(stderr, "Erro a abrir o meu pipe de escrita!\n");
+int main(int argc, char *argv[])
+{
+    int fdServer, fdClient;
+    char str[100];
+    question q;
+    int bytes;
+    float result=0;
+    char pipeName[100];
 
-        sair(-1);
-    }
+    signal(SIGINT, exitByCrtlC);
 
-    sprintf(buff, "%d_r", getpid());
-    if (mkfifo(buff, 0777) == -1) {
-        fprintf(stderr, "Erro a construir o meu pipe de leitura!\n");
+    fdServer = open(SERVER, O_WRONLY);
+    if (fdServer == -1)
+        sayThisAndExit("Server pipe Error. Maybe Server isn't running?!?");
+    
 
-        sair(-1);
-    }
+    sprintf(pipeName, CLIENT, getpid() );
+    mkfifo(pipeName, 00777);
 
-    fd_r = open(buff, O_RDWR);
-    if (fd_r == -1) {
-        fprintf(stderr, "Erro a abrir o meu pipe de leitura!\n");
+    while(1)
+    {
 
-        sair(-1);
-    }
+        printf("\nIntoduza a conta a resolver: ");
 
-    printf("[CLI] Pipes criados e abertos com sucesso. Vou enviar o meu PID -%d- ao servidor...\n", getpid());
-    sprintf(buff, "%d", getpid());
-    n = write(fd_serv, buff, strlen(buff) + 1);
-    if (n == -1) {
-        fprintf(stderr, "Erro a escrever no pipe do servidor!\n");
-        sair(-1);
-    }
-
-    while (1) {
-        printf("[CLI] Insira a operação: ");
-        scanf(" %d %c %d", &n1, &op, &n2);
-
-        if (n1 == 0 && n2 == 0)
-            sair(0);
-
-        // Verificações do input...
-
-        sprintf(buff, "%d %c %d", n1, op, n2);
-        printf("[CLI] Vou enviar ao servidor: -%s-\n", buff);
-        n = write(fd_w, buff, strlen(buff) + 1);
-        if (n == -1) {
-            fprintf(stderr, "Erro a escrever no meu pipe de escrita!\n");
-            sair(-1);
+        fgets(str, sizeof(str), stdin); // scanf("%s", buffer);
+        if (strlen(str) > 0 && (str[strlen(str) - 1] == '\n'))
+        { // se tem lá alguma coisa que termina com \n
+            str[strlen(str) - 1] == '\0';
         }
-        
-        n = read(fd_r, buff, sizeof(buff) - 1); // Ler do pipe fd1
-        buff[n - 1] = '\0';
-        printf("[CLI] Lidos %i bytes do meu pipe de leitura: -%s-.\n", n, buff);
-    }
 
-    sair(0);
+        printf("[KEYBOARD: %s]\n", str);
+         fflush(stdout);
+        q.clientPid = getpid();
+        strcpy(q.str, str);
+        strcpy(q.pipeName, pipeName);
+
+
+        printf("\n[TO SERVER] %s", str);
+        write( fdServer, &q, sizeof(q) );
+       
+
+        fdClient = open(pipeName, O_RDONLY);
+         if (fdClient == -1)
+        sayThisAndExit("Client pipe error");
+
+       read(fdClient, &result, sizeof(float) );
+       printf("\n[FROM SERVER] result %f", result);
+
+       close(fdClient);
+
+
+
+
+
+    } 
 }
-
