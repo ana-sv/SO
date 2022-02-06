@@ -2,6 +2,10 @@
 
 /*
 
+1 thread que recebe informação do pipe direito
+1 thread que recebe informação do pipe esquerdo
+as 2 threads utilizam a mesma funcao para leitura de pipe
+
 */
 
 #include <sys/types.h>
@@ -27,6 +31,7 @@
 
 #define PIPEE "esq"
 #define PIPED "dir"
+int fdEsquerdo, fdDireito;
 
 void sayThisAndExit(char *p)
 {
@@ -34,24 +39,24 @@ void sayThisAndExit(char *p)
     exit(EXIT_FAILURE);
 }
 
-void ExitByCrtlC(int s)
-{
-    printf("\n -> Crtl ^C Ativated ");
-    exit(EXIT_SUCCESS);
-}
+
 
 void sig_handler(int signal, siginfo_t *info, void *extra)
 {
     if (signal == SIGINT)
     {
-        printf("Recebido SIGINT! A fechar ordeiramente...\n");
+        printf("Recebido SIGINT! A fechar...\n");
 
-        // fechar pipes
+        close(fdDireito);
+        close(fdEsquerdo);
+        unlink(PIPED);
+        unlink(PIPEE);
+        remove(PIPED);
+        remove(PIPEE);
 
         exit(0);
     }
 }
-
 
 typedef struct
 {
@@ -59,7 +64,7 @@ typedef struct
     int cancel;
     int fdPipe;
     char pipeName[BUFFSIZENAME];
-    void * retval;     // codigo de terminação da thread
+    void *retval; // codigo de terminação da thread
 
 } ThreadDados;
 
@@ -84,11 +89,10 @@ void *threadFuction(void *dados)
     return NULL;
 }
 
-
 int main()
 {
     char cmd[BUFFSIZE];
-    int  fdEsquerdo, fdDireito, res;
+    int res;
 
     ThreadDados tdados[2];
 
@@ -97,56 +101,44 @@ int main()
     action.sa_flags = SA_RESTART | SA_SIGINFO; // Inicializar as flags
     action.sa_sigaction = sig_handler;         //Registar função
 
-
-
-
     if (sigaction(SIGINT, &action, NULL) == -1)
         sayThisAndExit("SIGINT error");
 
-    if( mkfifo(PIPEE, 00777) == 1 || mkfifo(PIPED, 00777) == -1 )
+    if (mkfifo(PIPEE, 00777) == 1 || mkfifo(PIPED, 00777) == -1)
         sayThisAndExit("Error creating pipes");
 
     fdDireito = open(PIPED, O_RDWR);
     fdEsquerdo = open(PIPEE, O_RDWR);
-    if( fdDireito == -1 | fdEsquerdo == -1 )
+    if (fdDireito == -1 | fdEsquerdo == -1)
         sayThisAndExit("Error opening left pipe");
 
-
-    // criar 2 threads para receber os dados de cada um dos pipes 
-    strcpy(tdados[0].pipeName,"PIPE DIREITO");
+    // criar 2 threads para receber os dados de cada um dos pipes
+    strcpy(tdados[0].pipeName, "PIPE DIREITO");
     tdados[0].fdPipe = fdDireito;
-    tdados[0].cancel = 0; 
-    res = pthread_create( &tdados[0].id, NULL, threadFuction, &tdados[0]);
-    
-    strcpy(tdados[1].pipeName,"PIPE ESQUERDO");
+    tdados[0].cancel = 0;
+    res = pthread_create(&tdados[0].id, NULL, threadFuction, &tdados[0]);
+
+    strcpy(tdados[1].pipeName, "PIPE ESQUERDO");
     tdados[1].fdPipe = fdEsquerdo;
-    tdados[1].cancel = 0; 
-    res = pthread_create( &tdados[1].id, NULL, threadFuction, &tdados[1]);
+    tdados[1].cancel = 0;
+    res = pthread_create(&tdados[1].id, NULL, threadFuction, &tdados[1]);
 
-    do{
-        printf("\ncomando - ");
-        scanf("%s", cmd);
+    printf("\nReady!\n");
+    while (1)
+    {
+        scanf("%s[^\n]", cmd);
+        printf("Teclado: [%s]\n", cmd);
+        if (strcmp(cmd, "sair") == 0)
+            break;
+    }
 
-    }while( strcmp(cmd,"sair"));
-
-    
-    // indicar para terminarem as threads 
-    tdados[0].cancel = 1;
-    tdados[1].cancel = 1;
-
-
-    // esperar thread terminarem
-    pthread_join(tdados[0].id, &tdados[0].retval);
-    pthread_join(tdados[1].id, &tdados[1].retval);
-
-
-    // fechar pipes 
+    // fechar pipes
     close(fdDireito);
     close(fdEsquerdo);
     unlink(PIPED);
     unlink(PIPEE);
+    remove(PIPED);
+    remove(PIPEE);
 
-
-    return(EXIT_SUCCESS);
-    
+    return (EXIT_SUCCESS);
 }

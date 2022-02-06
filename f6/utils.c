@@ -16,15 +16,14 @@
 
 #include <pthread.h>
 
-
-
-void sayThisAndExit(char * p){
+void sayThisAndExit(char *p)
+{
     perror(p);
     exit(EXIT_FAILURE);
 }
 
-
-void ExitByCrtlC(int s){
-    printf("\n -> Crtl ^C Ativated " );
+void ExitByCrtlC(int s)
+{
+    printf("\n -> Crtl ^C Ativated ");
     exit(EXIT_SUCCESS);
 }
