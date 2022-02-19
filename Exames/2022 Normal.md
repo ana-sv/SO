@@ -25,11 +25,11 @@ Endereçamento Virtual - Cada processo apercebe-se de um conjunto de endereços 
 No endereçamento virtual o espaço de endereçamento de cada processo é subdividido num conjunto de blocos. Cada bloco pode estar mapeado em qualquer zona da memória fisica, não é preciso manter a ordem que os blocos aparentam ter logo, é resolvido assim o problema de fragmentação que acontece com o endereçamento real. 
 Usando a memória virtual, pode-se armazenar temporariamente em disco alguns blocos do espaço de endereçamento que não façam falta de momento resolvendo assim também a questão do limite de tamanho máximo dos programas. 
 
-#### 4) 
+#### 4) Resolver com fork, exec e pipes anonimos 
 
-
-
-
+`` 
+code
+``
 
 
 
@@ -72,3 +72,16 @@ apresenta tamanho e nome dos ficheiros
 ls -s1
 ``
 
+#### 2) Resolver com passagem de variaveis por linha de comandos, select e named pipes
+
+``
+code
+``
+
+
+
+#### 3) Resolver com named pipes 
+
+``
+code
+``
