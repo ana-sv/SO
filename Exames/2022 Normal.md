@@ -1,5 +1,5 @@
-# Exame 2021-2022 Normal 
-##### 22 Janeiro 2022
+# Exame 2021-2022 - Época Normal 
+#### 22 Janeiro 2022
 ## Parte I - Sem Consulta
 
 #### 1) Assuma que encontra um sistema Unix em que as passwords dos utilizadores estão encriptadas, no ficheiro/etc/passwd. Descreva detalhadamente os méritos e os problemas desta situação. Se achar que há problemas, exemplifique uma ação que poss por em causa o sistema com base na situação descrita. Se não houver problema nenhum justifique também. 
