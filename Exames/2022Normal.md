@@ -41,7 +41,7 @@ code
 lista nomes de utilizadores e user id sem os : , ordenar a 2 coluna revertida, 2 linhas a partir de cima e 1 a partir de baixo
 
 ``
-cut -d: -f1,3 /etc/passwd | tr ":" " " | sort -n -k2 - r | head -2 | tail -1 
+cut -d: -f1,3 /etc/passwd | tr ":" " " | sort -n -k2 -r | head -2 | tail -1 
 ``
 
 
@@ -60,12 +60,8 @@ cut -d: -f1,3 /etc/passwd | tr ":" " "
 na pasta pessoal, na diretoria apresenta nome e tamanho, ordenado revertidadmente ( nao é preciso mais nada porque a primeira columa é já o tamanho e é por ai que queremos ordenar) , 5 linhas a contar de cima, tudo isto para o ficheiro.txt 
 
 ``
-cd ~ ( ls -s1/ etc | sort -rn | head -5 ) > "ficheiro.txt"
-``
+cd /home/ana |ls -s1 /etc | sort -rn | head -5 > "ficheiro.txt"
 
-vai para a pasta do utilizador
-``
-cd ~
 ``
 
 apresenta tamanho e nome dos ficheiros 
