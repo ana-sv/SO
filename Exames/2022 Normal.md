@@ -26,3 +26,31 @@ No endereçamento virtual o espaço de endereçamento de cada processo é subdiv
 Usando a memória virtual, pode-se armazenar temporariamente em disco alguns blocos do espaço de endereçamento que não façam falta de momento resolvendo assim também a questão do limite de tamanho máximo dos programas. 
 
 #### 4) 
+
+
+
+
+
+
+
+## Parte II - Com Consulta
+
+####1.a) Apresente no ecra o username e user id do utilizador que tem o segundo user id mais elevado no sistema ( exemplo do conteudo do ficheiro: maria 1006 ). A correta realização desta tarefa não deve depender da pasta atual em que se encontra na linha de comandos. 
+
+lista nomes de utilizadores e user id sem os : , ordenar a 2 coluna revertida, 2 linhas a partir de cima e 1 a partir de baixo
+
+``
+cut -d: -f1,3 /etc/passwd | tr ":" " " | sort -n -k2 - r | head -2 | tail -1 
+``
+
+
+lista nomes de utilizadores 
+``
+cut -d: -f1 /etc/passwd 
+``
+
+lista nomes de utilizadores e user id sem os : 
+``
+cut -d: -f1,3 /etc/passwd | tr ":" " " 
+``
+
