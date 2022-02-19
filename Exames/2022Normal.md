@@ -61,7 +61,6 @@ na pasta pessoal, na diretoria apresenta nome e tamanho, ordenado revertidadment
 
 ``
 cd /home/ana |ls -s1 /etc | sort -rn | head -5 > "ficheiro.txt"
-
 ``
 
 apresenta tamanho e nome dos ficheiros 
