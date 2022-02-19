@@ -35,7 +35,7 @@ Usando a memória virtual, pode-se armazenar temporariamente em disco alguns blo
 
 ## Parte II - Com Consulta
 
-####1.a) Apresente no ecra o username e user id do utilizador que tem o segundo user id mais elevado no sistema ( exemplo do conteudo do ficheiro: maria 1006 ). A correta realização desta tarefa não deve depender da pasta atual em que se encontra na linha de comandos. 
+#### 1.a) Apresente no ecra o username e user id do utilizador que tem o segundo user id mais elevado no sistema ( exemplo do conteudo do ficheiro: maria 1006 ). A correta realização desta tarefa não deve depender da pasta atual em que se encontra na linha de comandos. 
 
 lista nomes de utilizadores e user id sem os : , ordenar a 2 coluna revertida, 2 linhas a partir de cima e 1 a partir de baixo
 
@@ -52,5 +52,23 @@ cut -d: -f1 /etc/passwd
 lista nomes de utilizadores e user id sem os : 
 ``
 cut -d: -f1,3 /etc/passwd | tr ":" " " 
+``
+
+#### 1.b) Guarde na sua pasta pessoal um ficheiro com o nome "ficheiro.txt" cujo conteudo será com o nome e o tamanho ( apenas estes dois campos - um linha por cada ficheiro), dos cinco maiores ficheiros que se encontram na diretoria /etc. Se o ficheiro já existir, a informação é acrescentada ao que já lá estava. A correta realização desta tarefa não deve depender da pasta atual em que se encontra na linha de comandos. 
+
+na pasta pessoal, na diretoria apresenta nome e tamanho, ordenado revertidadmente ( nao é preciso mais nada porque a primeira columa é já o tamanho e é por ai que queremos ordenar) , 5 linhas a contar de cima, tudo isto para o ficheiro.txt 
+
+``
+cd ~ ( ls -s1/ etc | sort -rn | head -5 ) > "ficheiro.txt"
+``
+
+vai para a pasta do utilizador
+``
+cd ~
+``
+
+apresenta tamanho e nome dos ficheiros 
+``
+ls -s1
 ``
 
