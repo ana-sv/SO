@@ -62,7 +62,17 @@ code
 
 
 
-#### 3) Resolver com named pipes 
+#### 3) Pretende-se um sistema informatizado para gerir o acsso às caixas de fila única de um supermercado. Este sistema é constituido por um processo distribuidor (distribui clientes pelas caixas) , N processos caixas e vários processos clientes. O mecanismo de comunicação entre os varios processos é names pipes. As aplicações cliente e caixa já estão implementadas e o foco da questão é o distribuidor.
+
+Cada novo cliente que surge irá contactar o distribuidor, fornecendo-lhe apenas uma string que corresponde ao seu nome. De seguida aguarda que caixa o contacte através do name pipe com o seu nome. Existem dois tipos de clientes, os normais e os prioritários, existindo um named pipe diferente para cada um desres dois tipos de cliente. 
+
+O distribuidor é responsável por lançar uma nova caixa para cada novo cliente. Cada caixa atende um cliente, após que termina. Existe um número máximo de caixas em simultaneo, especificado através da variável de ambiente NCAIXAS. 
+
+O funcionamento do distribuidor é: se ainda não tiver atingido esse número , o distribuidor averigua se tem clientes para atender, e caso tenha, lança uma caixa para ele, passando-lhe ( através de segmentos de linha de comandos ) toda a informação necessária que permita ao caixa interagir com o cliente. Se existir um cliente prioritário, será atendido antes dos clientes normais que ainda nao tenham sido atribuidos a nenhum caixa. 
+
+Depreende-se que as caixas informam o distribuidor quando terminam o atendimento de um cliente. Essa notificação deve também ser feita por named pipe. 
+Todos os names pipes aqui referidos pertencem ao distribuidor. Implemente o código do destribuidor. 
+
 
 ``
 code
