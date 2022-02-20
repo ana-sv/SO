@@ -27,6 +27,7 @@ No endereçamento virtual o espaço de endereçamento de cada processo é subdiv
 Usando a memória virtual, pode-se armazenar temporariamente em disco alguns blocos do espaço de endereçamento que não façam falta de momento resolvendo assim também a questão do limite de tamanho máximo dos programas. 
 
 #### 4) Resolver com fork, exec e pipes anonimos 
+![image](https://user-images.githubusercontent.com/44445562/154860501-92717598-4966-49f1-97f1-2583d64b7a46.png)
 
 `` 
 code
