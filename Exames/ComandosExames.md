@@ -36,13 +36,13 @@ cut -d: -f1,5 /etc/passwd | tr ":" " " | sort  ----> falta a cena da letra minus
 
 
 ## sort
-ordena numeros(-n) da segunda coluna(-k2) na ordem reversa(-r)
+###### ordena numeros(-n) da segunda coluna(-k2) na ordem reversa(-r)
 ``
 sort -n -k2 -r
 ``
 
 ## ls
-ls ordenado pelo tamanho do ficheiro , maiores primeiro
+###### ls ordenado pelo tamanho do ficheiro , maiores primeiro
 ``
 ls -S
 ``
