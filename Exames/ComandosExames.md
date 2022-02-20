@@ -29,6 +29,7 @@ ls -lS $( find /tmp -user antonio | grep ".txt$" ) > resultado.txt
 
 #### 5) Utilizando a linha de comandos, coloque no ficheiro "nomes.txt" o login (username) dos utilizadores do sistema que utilizam a shell bash e que tem o nome próprio começado por uma letra minuscula. Esta informação deve estar ondenada por ondem crescente do grupo primário do utilizador. 
 escolhe a 1 e 5 colunas | troca o : por espaço | organiza pelo nome crescente 
+
 ``
 cut -d: -f1,5 /etc/passwd | tr ":" " " | sort  ----> falta a cena da letra minuscula
 ``
