@@ -40,7 +40,7 @@ code
 #### 1.a) Apresente no ecra o username e user id do utilizador que tem o segundo user id mais elevado no sistema ( exemplo do conteudo do ficheiro: maria 1006 ). A correta realização desta tarefa não deve depender da pasta atual em que se encontra na linha de comandos. 
 
 
-lista nomes de utilizadores e user id sem os : , ordenar a 2 coluna revertida, 2 linhas a partir de cima e 1 a partir de baixo
+lista nomes de utilizadores e user id, substitui os : por um espaço , ordenar a 2 coluna revertida, 2 linhas a partir de cima e 1 a partir de baixo
 
 ``
 cut -d: -f1,3 /etc/passwd | tr ":" " " | sort -n -k2 -r | head -2 | tail -1 
@@ -48,6 +48,10 @@ cut -d: -f1,3 /etc/passwd | tr ":" " " | sort -n -k2 -r | head -2 | tail -1
 
 #### 1.b) Guarde na sua pasta pessoal um ficheiro com o nome "ficheiro.txt" cujo conteudo será com o nome e o tamanho ( apenas estes dois campos - um linha por cada ficheiro), dos cinco maiores ficheiros que se encontram na diretoria /etc. Se o ficheiro já existir, a informação é acrescentada ao que já lá estava. A correta realização desta tarefa não deve depender da pasta atual em que se encontra na linha de comandos. 
 
+ordena ls por tamanho do ficheiro | esquece os espaços a mais| fica com a 4 e 5 colunas delimitadas por " " | 5 linhas de cima ) poe no ficheiro que está na pasta pessoal
+``
+ls -lS /etc | tr -s " "| cut -d " " -f4,5 | head -5  >  /home/ana/ficheiro.txt
+``
 
 
 #### 2) Resolver com passagem de variaveis por linha de comandos, select e named pipes
