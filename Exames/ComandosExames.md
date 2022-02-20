@@ -16,7 +16,7 @@ cut -d: -f1,3 /etc/passwd | tr ":" " " | sort -n -k2 -r | head -2 | tail -1
 na pasta pessoal, na diretoria apresenta nome e tamanho, ordenado revertidadmente ( nao é preciso mais nada porque a primeira columa é já o tamanho e é por ai que queremos ordenar) , 5 linhas a contar de cima, tudo isto para o ficheiro.txt 
 
 ``
-cd /home/ana | ......   | sort -rn | head -5 > "ficheiro.txt"     REVER
+cd /home/ana | ......   | sort -rn | head -5 > "ficheiro.txt"   ------------------------->  REVER
 ``
 
 #### 3) Utilizando apenas uma linha de comandos, elimine todos os named pipes existentes na sua homedir ( directoria pessoal ). A resposta nao deve depender da diretoria em que se encontra atualmente.
@@ -25,8 +25,8 @@ cd /home/ana | find -type p -delete
 ``
 #### 4) Utilizando apenas uma linha de comandos, coloque no ficheiro " resultado.txt" o nome de todos os ficheiros que exitem na pasta "/tmp" que tenham extenção ".txt" e pertencentes ao utilizador com o username(login) "antonio". A lista de ficheiros deve estar organizada por ordem crescente do tamanho dos ficheiros. 
 ``
+find /tmp -user antonio | grep ".txt$" > resultado.txt
 ``
-
 
 
 
