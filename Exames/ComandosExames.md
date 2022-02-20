@@ -1,4 +1,4 @@
-## Exercicios Comandos Linux 
+## Exercicios sobre Comandos Linux 
 #### Exames dos Anos 2020 - 2022
 
 
