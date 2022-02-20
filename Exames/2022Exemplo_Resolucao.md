@@ -1,5 +1,5 @@
 # Exame Exemplo 2022
-
+> este exame dado como exemplo em 2022 foi o exame da época normal do ano 2021
 
 #### 1) Considere a arquitetura do sistema micro-kernel ( é a que o Windows utiliza). Indique se esta arquitetura é muito estável ou pouco estável e explique a razão se ser dessa estabilidade (ou falta dela).
 
