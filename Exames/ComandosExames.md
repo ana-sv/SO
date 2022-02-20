@@ -25,9 +25,10 @@ cd /home/ana | find -type p -delete
 ``
 #### 4) Utilizando apenas uma linha de comandos, coloque no ficheiro " resultado.txt" o nome de todos os ficheiros que exitem na pasta "/tmp" que tenham extenção ".txt" e pertencentes ao utilizador com o username(login) "antonio". A lista de ficheiros deve estar organizada por ordem crescente do tamanho dos ficheiros. 
 ``
-find /tmp -user antonio | grep ".txt$" > resultado.txt
+ls -laS $( find /tmp -user antonio | grep ".txt$" ) > resultado.txt
 ``
 
+#### 5) Utilizando a linha de comandos, coloque no ficheiro "nomes.txt" o login (username) dos utilizadores do sistema que utilizam a shell bash e que tem o nome próprio começado por uma letra minuscula. Esta informação deve estar ondenada por ondem crescente do grupo primário do utilizador. 
 
 
 
