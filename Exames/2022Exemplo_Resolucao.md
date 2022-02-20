@@ -11,4 +11,5 @@ cd /home/ana | -type p delete
 ``
 #### 5) Utilizando apenas uma linha de comandos, coloque no ficheiro " resultado.txt" o nome de todos os ficheiros que exitem na pasta "/tmp" que tenham extenção ".txt" e pertencentes ao utilizador com o username(login) "antonio". A lista de ficheiros deve estar organizada por ordem crescente do tamanho dos ficheiros. 
 ``
+ls -laS $( find /tmp -user antonio | grep ".txt$" ) > resultado.txt
 ``
