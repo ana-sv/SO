@@ -101,6 +101,9 @@ void sayThisAndExit(char *p)
 void exitByCrtlC(int s)
 {
     printf("\n -> Crtl ^C Ativated ");
+    close(fdClienteP);
+    close(fdClienteN);
+    close(fCaixa);
     exit(EXIT_SUCCESS);
 }
 
