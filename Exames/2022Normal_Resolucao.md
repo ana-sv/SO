@@ -31,8 +31,63 @@ Usando a memória virtual, pode-se armazenar temporariamente em disco alguns blo
 
 ##### Usando obrigatoriamente o programa já existente scicalc , faça um programa em C para Unix/Linux que peça ao utilizador os dois operandos e a operação a realizar e apresente o resultado no ecra no seguinte formato: se nao tiver havido erro, a mensagem é: "o resultado foi:" em que x é o valor calculado; se tiver havido erro, aparece simplesmente "enganou-se em qualquer coisa". O seu programa não é responsável por analisar a validade dos dados de entrada , mas tem que descobrir se a operação correu bem ou não e apanhar o resultado. O seu programa deve permitir ao utilizador, numa única execução, efectuar vários cálculos, terminando quando o primeiro operando for "fim".
 
+-----------------------------------------> PRECISA DE REVISAO
+
 ```C
-fork exec pipes anonimos 
+
+int main(int argc, char **argv)
+{
+
+    int str[10], pid, n;
+    float resultado;
+
+    int fd[2];
+    if ( pipe(fd) < 0 ){
+        perror("Erro no pipe");
+        exit(1);
+    }
+    
+
+    while (1)
+    {
+
+        printf("\nInsira operando1 operacao operando2: ");
+        scanf("%s", str);
+
+        if (strcmp(str, "fim") == 0)
+            break;
+
+
+        pid = fork();
+        if (pid == -1)
+        {
+            perror("erro no fork");
+            break;
+        }
+        else if (pid == 0)  // child
+        { 
+            close(fd[0]); // fecha o lado de ler
+            execl("./scicalc", "./scicalc", str, NULL);
+
+        }else{ // parent
+          
+            close(fd[1]); // fecha o lado de escrever
+
+            n = read(fd[0], &resultado, sizeof(resultado) );
+            if(n==-1)
+                perror("erro ao ler pipe");
+
+            if( resultado == -1 )
+                printf("\nEnganou-se em qualquer coisa");
+            else
+                printf("\nO resultado foi: %f", resultado);
+          
+      
+        };
+
+    }
+
+}
 ```
 
 
