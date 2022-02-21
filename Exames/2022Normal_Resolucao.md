@@ -77,6 +77,8 @@ Todos os names pipes aqui referidos pertencem ao distribuidor. Implemente o cód
 
 ```C
 
+int contadorCaixas;
+int fdClienteN, fdClienteP, fdCaixa;
 
 void sayThisAndExit(char *p)
 {
@@ -108,8 +110,6 @@ int max(int a, int b, int c)  // ranhoso, but should work
 
 
 
-int contadorCaixas;
-int fdClienteN, fdClienteP, fdCaixa;
 
 int main(int argc, char *argv[])
 {
