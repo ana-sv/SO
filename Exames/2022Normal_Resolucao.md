@@ -64,7 +64,7 @@ Não é necessário implementar o algoritmo que conta o número de linhas. Deve 
 int leProximaLinha(char ficheiro[] ); 
 ``
 
-Devolve 1 se leu mais do que uma linha, o se chegou ao fim e nao leu nada, -1 se nao conseguiu aceder ao ficheiro. 
+Devolve 1 se leu mais uma linha, 0 se chegou ao fim e nao leu nada, -1 se nao conseguiu aceder ao ficheiro. 
 
 ```C
 code
