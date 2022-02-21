@@ -74,6 +74,152 @@ Depreende-se que as caixas informam o distribuidor quando terminam o atendimento
 Todos os names pipes aqui referidos pertencem ao distribuidor. Implemente o código do destribuidor. 
 
 
-``
-code
-``
+
+```
+
+
+void sayThisAndExit(char *p)
+{
+    perror(p);
+    close(fdClienteP);
+    close(fdClienteN);
+    close(fCaixa);
+    exit(EXIT_FAILURE);
+}
+
+void exitByCrtlC(int s)
+{
+    printf("\n -> Crtl ^C Ativated ");
+    exit(EXIT_SUCCESS);
+}
+
+int max(int a, int b, int c)  // ranhoso, but shoud work   ---> REVER 
+{
+
+    if (a > b && a > c)
+        return a;
+
+    if ( b> a && b > c)
+        return b ;
+
+    if (c > a && c > b)
+        return c;
+}
+
+
+
+int contadorCaixas;
+int fdClienteN, fdClienteP, fdCaixa;
+
+int main(int argc, char *argv[])
+{
+    int res, res1, res2, res3;
+    int ncaixas;
+
+    //select
+    int nfd;
+    fd_set read_fds;
+
+    signal(SIGINT, exitByCrtlC); // para interromper via Crtl^C
+
+    //recebe a variavel de ambiente NCAIXAS
+    if (argc != 2)
+        sayThisAndExit("Erro ao recolher variavel ambiente");
+
+    if (ncaixas = argv[1] == 0)
+        ncaixas = 10;
+
+    //cria pipes
+    mkfifo("pipeClientePrioritario", 0777);
+    mkfifo("pipeClienteNormal", 0777);
+    mkfifo("pipeCaixa", 0777);
+
+    // abre pipes READ + NONBLOCK
+    fdClienteP = open("pipeClientePrioritario", O_RDONLY | O_NONBLOCK);
+    fdClienteN = open("pipeClienteNormal", O_RDONLY | O_NONBLOCK);
+    fdCaixa = open("pipeCaixa", O_RDONLY | O_NONBLOCK);
+    if (fdClienteP == -1 | fdClienteN == -1 | fdCaixa == -1)
+        sayThisAndExit("Erro pipes");
+
+    //ciclo select
+    while (1)
+    {
+        FD_ZERO(&read_fds);
+        FD_SET(fdClienteP, &read_fds);
+        FD_SET(fdClienteN, &read_fds);
+        FD_SET(fdCaixa, &read_fds);
+
+        nfd = select(max(fdClienteP + fdClienteP + fdCaixa) + 1, &read_fds, NULL, NULL, NULL);
+
+        if (nfd == -1)
+        {
+            sayThisAndExit("Erro no select");
+        }
+
+        if (contadorCaixas < ncaixas)
+        {
+
+            // lê primeiro o prioritário se tiver alguma coisa
+            if (FD_ISSET(fdClienteP, &read_fds))
+            {
+                readPipesClientes(fdClienteP);
+            }
+
+            if (FD_ISSET(fdClienteN, &read_fds))
+            {
+                readPipesClientes(fdClienteN);
+            }
+        }
+
+        if (FD_ISSET(fdCaixa, &read_fds))
+        {
+
+            char str[50];
+            int bytes;
+            bytes = read(fd, str, sizeof(str));
+            if (bytes == -1)
+                sayThisAndExit("Erro a ler pipe caixa");
+
+            if (strcmp(str, "Caixa Terminada") == 0)
+                contadorCaixas--;
+        }
+    }
+
+    return EXIT_SUCCESS; // em principio nao chegará aqui
+}
+
+
+
+void readPipesClientes(int fd)
+{
+    char name[50];
+    int bytes;
+    int pid;
+
+    // recebe o nome do cliente que é também o nome do seu pipe
+    bytes = read(fd, name, sizeof(name));
+    if (bytes == -1)
+        sayThisAndExit("Erro a ler pipes ");
+
+    if ((bytes > 0) && (name[strlen(name) - 1] == '\n'))
+        name[bytes] = '\0';
+
+    //lança nova caixa
+    pid = fork();
+
+    if (pid < 0)
+    {
+        sayThisAndExit("Erro no fork")
+    }
+    else if (pid == 0) // child
+    { 
+
+        execl(caixa, caixa, nome, (char *) NULL); // REVER
+       
+    }
+    else{       // parent
+         contadorCaixas++;
+    }
+}
+
+```
