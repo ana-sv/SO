@@ -67,7 +67,88 @@ int leProximaLinha(char ficheiro[] );
 Devolve 1 se leu mais uma linha, 0 se chegou ao fim e nao leu nada, -1 se nao conseguiu aceder ao ficheiro. 
 
 ```C
-code
+typedef struct
+{
+    char nomeFicheiro[50];
+    int *ptrContador;          // ponteiro para o contador de linhas
+    pthread_mutex_t *ptrMutex; // ponteiro para mutex
+    pthread_cond_t *ptrCondv;  // ponteiro para variavel condiciona
+    pthread_t tid;             // id da thread
+    void *retval;              // codigo de terminação da thread
+    int cancel;
+} TDados;
+
+void *funcaoThread(void *arg)
+{
+    TDados *dados = (TDados *)arg;
+    int res;
+
+    do
+    {
+        res = leProximaLinha(dados->nomeFicheiro);
+
+        if (res == 1)
+        {
+            pthread_mutex_lock(dados->ptrMutex);
+            dados->ptrContador++;
+            pthread_mutex_unlock(dados->ptrMutex);
+        }
+        if (res == -1)
+        {
+            // erro -> envia sinal para a variavel condicional para terminar
+            pthread_cond_signal(dados->ptrCondv); 
+        }
+
+    } while (res != 0 || dados->cancel == 0);
+}
+
+int main(int argc, char *argv[])
+{
+
+    int nthreads,contador=0, i, res;
+
+    for (nthreads = 1; argv[nthreads] != NULL; nthreads++)
+        ;
+    nthreads--; // porque começa no 1 por causa do argv em arvg[0] é o nome do programa
+
+    if (nthreads == 0)
+    {
+        printf("Sem ficheiros para contar linhas ");
+        exit(1);
+    }
+
+    TDados tdados[nthreads];
+    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // mutex
+    pthread_cond_t condv = PTHREAD_COND_INITIALIZER;   // variavel condicional
+
+    for (i = 0; i < nthreads; i++)
+    {
+        tdados[i].cancel = 0;
+        tdados[i].ptrContador = &contador;
+        tdados[i].ptrMutex = &mutex;
+        tdados[i].ptrCondv = &condv;
+        strcpy(tdados[i].nomeFicheiro, argv[i + 1]);
+        res = pthread_create(&tdados[i].tid, NULL, funcaoThread, (void *)&tdados[i]);
+    }
+
+    // aguarda sinalização da variavel condicional
+    // bloqueia no wait e o mutex é libertado enquanto bloqueado
+    // o mutex é automaticamente readquirido quando o wait acorda
+    pthread_cond_wait(&condv, &mutex);
+
+    //indicar ás threads para terminarem
+    for (i = 0; i < nthreads; i++)
+        tdados[i].cancel = 1; // nunca terminar threads à força
+
+    for (i = 0; i < nthreads; i++)
+        pthread_join(tdados[i].tid, &tdados[i].retval);
+
+    printf("Numero total de linhas dos ficheiros: %d", contador );
+
+    pthread_mutex_destroy(&mutex);
+
+    exit(0);
+}
 ```
 
 
