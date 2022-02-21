@@ -93,7 +93,7 @@ void exitByCrtlC(int s)
     exit(EXIT_SUCCESS);
 }
 
-int max(int a, int b, int c)  // ranhoso, but shoud work   ---> REVER 
+int max(int a, int b, int c)  // ranhoso, but should work
 {
 
     if (a > b && a > c)
