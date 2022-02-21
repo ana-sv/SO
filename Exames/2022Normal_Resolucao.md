@@ -107,8 +107,7 @@ int main(int argc, char *argv[])
 
     int nthreads,contador=0, i, res;
 
-    for (nthreads = 1; argv[nthreads] != NULL; nthreads++)
-        ;
+    for (nthreads = 1; argv[nthreads] != NULL; nthreads++);
     nthreads--; // porque começa no 1 por causa do argv em arvg[0] é o nome do programa
 
     if (nthreads == 0)
