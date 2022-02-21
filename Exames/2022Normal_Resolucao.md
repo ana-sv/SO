@@ -75,7 +75,7 @@ Todos os names pipes aqui referidos pertencem ao distribuidor. Implemente o cód
 
 
 
-```
+```C
 
 
 void sayThisAndExit(char *p)
