@@ -26,12 +26,14 @@ Endereçamento Virtual - Cada processo apercebe-se de um conjunto de endereços 
 No endereçamento virtual o espaço de endereçamento de cada processo é subdividido num conjunto de blocos. Cada bloco pode estar mapeado em qualquer zona da memória fisica, não é preciso manter a ordem que os blocos aparentam ter logo, é resolvido assim o problema de fragmentação que acontece com o endereçamento real. 
 Usando a memória virtual, pode-se armazenar temporariamente em disco alguns blocos do espaço de endereçamento que não façam falta de momento resolvendo assim também a questão do limite de tamanho máximo dos programas. 
 
-#### 4) Resolver com fork, exec e pipes anonimos 
+#### 4) O programa scicalc (scientific calculator) é um programa que já existe para Linux ( se o instalar) que efectua cálculos aritméticos de números de virgula flutuante. Usa-se em linha de comandos de forma que os exemplos abaixo ilustram. 
 ![image](https://user-images.githubusercontent.com/44445562/154860501-92717598-4966-49f1-97f1-2583d64b7a46.png)
 
-`` 
-code
-``
+##### Usando obrigatoriamente o programa já existente scicalc , faça um programa em C para Unix/Linux que peça ao utilizador os dois operandos e a operação a realizar e apresente o resultado no ecra no seguinte formato: se nao tiver havido erro, a mensagem é: "o resultado foi:" em que x é o valor calculado; se tiver havido erro, aparece simplesmente "enganou-se em qualquer coisa". O seu programa não é responsável por analisar a validade dos dados de entrada , mas tem que descobrir se a operação correu bem ou não e apanhar o resultado. O seu programa deve permitir ao utilizador, numa única execução, efectuar vários cálculos, terminando quando o primeiro operando for "fim".
+
+```C
+fork exec pipes anonimos 
+```
 
 
 
@@ -61,6 +63,7 @@ Não é necessário implementar o algoritmo que conta o número de linhas. Deve 
 ``
 int leProximaLinha(char ficheiro[] ); 
 ``
+
 Devolve 1 se leu mais do que uma linha, o se chegou ao fim e nao leu nada, -1 se nao conseguiu aceder ao ficheiro. 
 
 ```C
@@ -158,23 +161,17 @@ int main(int argc, char *argv[])
         nfd = select(max(fdClienteP + fdClienteP + fdCaixa) + 1, &read_fds, NULL, NULL, NULL);
 
         if (nfd == -1)
-        {
-            sayThisAndExit("Erro no select");
-        }
+           sayThisAndExit("Erro no select");
 
         if (contadorCaixas < ncaixas)
         {
 
             // lê primeiro o prioritário se tiver alguma coisa
             if (FD_ISSET(fdClienteP, &read_fds))
-            {
                 readPipesClientes(fdClienteP);
-            }
 
             if (FD_ISSET(fdClienteN, &read_fds))
-            {
                 readPipesClientes(fdClienteN);
-            }
         }
 
         if (FD_ISSET(fdCaixa, &read_fds))
