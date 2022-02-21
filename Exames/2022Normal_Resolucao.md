@@ -54,12 +54,18 @@ ls -lS /etc | tr -s " "| cut -d " " -f4,5 | head -5  >  /home/ana/ficheiro.txt
 ``
 
 
-#### 2) Resolver com passagem de variaveis por linha de comandos, select e named pipes
+#### 2) Escreva um programa que receba o nome de N ficheiros através da linha de comandos e lance N threads, indicando a cada uma o nome de um desses N ficheiros. Cada thread irá contar o número total de linhas do ficheiro que lhe foi indicado e incrementar um contador geral, comum a todas elas. O incremento é feito a cada nova linha lida no ficheiros. No final, a thread inicial do processo deverá apresentar o valor do contador geral. Se em alguma das threads, ocorrer um erro na abertura do ficheiro, ela deve terminar cada uma das threads que foram criadas, incluindo ela própria, de forma a que o processo possa encerrar também logo de seguida.
+
+Não é necessário implementar o algoritmo que conta o número de linhas. Deve considerar a função seguinte: 
 
 ``
+int leProximaLinha(char ficheiro[] ); 
+``
+Devolve 1 se leu mais do que uma linha, o se chegou ao fim e nao leu nada, -1 se nao conseguiu aceder ao ficheiro. 
+
+```C
 code
-``
-
+```
 
 
 #### 3) Pretende-se um sistema informatizado para gerir o acsso às caixas de fila única de um supermercado. Este sistema é constituido por um processo distribuidor (distribui clientes pelas caixas) , N processos caixas e vários processos clientes. O mecanismo de comunicação entre os varios processos é names pipes. As aplicações cliente e caixa já estão implementadas e o foco da questão é o distribuidor.
