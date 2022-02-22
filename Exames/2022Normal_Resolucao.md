@@ -38,7 +38,8 @@ Usando a memória virtual, pode-se armazenar temporariamente em disco alguns blo
 int main(int argc, char **argv)
 {
 
-    int str[10], pid, n;
+    int pid, n;
+    char str[25], resposta[25];
     float resultado;
 
     int fd[2];
@@ -66,14 +67,17 @@ int main(int argc, char **argv)
         }
         else if (pid == 0)  // child
         { 
-            close(fd[0]); // fecha o lado de ler
-            execl("./scicalc", "./scicalc", str, NULL);
+
+            close(1);  //?????
+            dup(fd[1]);
+            execl("scicalc", "scicalc", str, NULL);
+            perror("\nerro na execucao do programa");
+            exit(1);
 
         }else{ // parent
           
-            close(fd[1]); // fecha o lado de escrever
-
-            n = read(fd[0], &resultado, sizeof(resultado) );
+            n = read(fd[0], &resposta, sizeof(resposta) );
+            resultado = atoi(resposta);
             if(n==-1)
                 perror("erro ao ler pipe");
 
@@ -81,11 +85,12 @@ int main(int argc, char **argv)
                 printf("\nEnganou-se em qualquer coisa");
             else
                 printf("\nO resultado foi: %f", resultado);
-          
       
-        };
+        }
 
     }
+    close(fd[1]);
+    close(fd[0]);
 
 }
 ```
