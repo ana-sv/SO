@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
         tdados[i].ptrMutex = &mutex;
         tdados[i].ptrCondv = &condv;
         strcpy(tdados[i].nomeFicheiro, argv[i + 1]);
-        res = pthread_create(&tdados[i].tid, NULL, funcaoThread, (void *)&tdados[i]);
+        pthread_create(&tdados[i].tid, NULL, funcaoThread, (void *)&tdados[i]);
     }
 
     // aguarda sinalização da variavel condicional
@@ -260,7 +260,6 @@ int max(int a, int b, int c)  // ranhoso, but should work
 
 int main(int argc, char *argv[])
 {
-    int res, res1, res2, res3;
     int ncaixas;
 
     //select
@@ -317,7 +316,7 @@ int main(int argc, char *argv[])
 
             char str[50];
             int bytes;
-            bytes = read(fd, str, sizeof(str));
+            bytes = read(fdCaixa, str, sizeof(str));
             if (bytes == -1)
                 sayThisAndExit("Erro a ler pipe caixa");
 
